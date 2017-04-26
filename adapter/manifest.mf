@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: main.Main
+Class-Path: lib/dom4j-1.6.1.jar lib/jaxen-1.1-beta-7.jar lib/org.eclipse.paho.client.mqttv3-1.0.1.jar lib/mongo-java-driver-3.2.2.jar lib/commons-beanutils.jar lib/commons-httpclient.jar lib/commons-lang.jar lib/ezmorph-1.0.6.jar lib/json-lib-2.2-jdk15.jar lib/commons-collections-3.2.1.jar lib/commons-logging-1.1.1.jar lib/log4j.jar
+

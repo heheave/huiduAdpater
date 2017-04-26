@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<variable>
+	<v name="LOG_PATH">file/log4j.properties</v>
+
+	<v name="TIME_INTERVAL_TO_SLEEP">8000</v>
+	<v name="BATCH_CAMPACITY"> 1000</v>
+	<v name="BATCH_PERIOD">15000</v>
+	<v name="MAX_BUF_SIZE">100</v>
+
+
+	<v name="DB_HOST">114.55.92.31</v>
+	<v name="DB_PORT">20001</v>
+	<v name="DB_USER">Huidu</v>
+	<v name="DB_PASSWORD">Huidu12341234</v>
+	<v name="DB_NAME">huidu</v>
+	<v name="CHANNEL_TABLE_NAME">channel0</v>
+	<v name="DATAS_TABLE_NAME">datas0</v>
+	<v name="CHANNEL_REALTIME_TABLE_NAME">channelRealtimeData0</v>
+	<v name="RECOVERY_SAVE_BASE_DIR">snapshot/</v>
+	<v name="ON_INFO_SAVE_FILE">cachesave/deviceoninfo.dat</v>
+
+	<v name="DEFAULT_SOCKET_SERVER_HOST">localhost</v>
+	<v name="DEFAULT_SOCKET_SERVER_PORT">9999</v>
+	<v name="DEFAULT_SOCKET_TRY_TIMES">3</v>
+
+
+	<v name="MQTT_HOST">tcp://120.27.235.39:1883</v>
+	<v name="MQTT_CNT_ID">default_client_subcriber</v>
+	<v name="MQTT_HEARTBEAT_CHECK_PERIOD">15000</v>
+	<v name="MQTT_MAX_SUB_TOPIC">10</v>
+	<v name="MQTT_LOG_ATFER_RETRY_TIME">3</v>
+
+</variable> 

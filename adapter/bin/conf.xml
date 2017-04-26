@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<context>
+	<uppipes>
+		<pipeline name="pipe1" class="pipe.EventPipeline">
+			<handler name="metadataHandler" class="pipe.pipehandler.MetadataPipeHandler" />
+			<handler name="data2jsonHandler" class="pipe.pipehandler.Data2JsonPipeHandler" />
+			<handler name="deviceOnHandler" class="pipe.pipehandler.UpdateDeviceonPipeHandler" />
+			<!-- <handler name="rulemapHandler" class="pipe.pipehandler.DataMapWithConfPipeHandler" 
+				/> -->
+			<handler name="deviceOnHandler" class="pipe.pipehandler.ChannelRealtimeDataHandler" />
+			<handler name="showDataHandler" class="pipe.pipehandler.ShowDataPipeHandler" />
+			<handler name="streamHandler" class="pipe.pipehandler.RemoteStreamPipeHandler" />
+		</pipeline>
+
+		<pipeline name="pipe2" class="pipe.EventPipeline">
+			<handler name="metadataHandler" class="pipe.pipehandler.MetadataPipeHandler" />
+			<handler name="data2jsonHandler" class="pipe.pipehandler.Conf2JsonPipeHandler" />
+			<handler name="rulemapHandler" class="pipe.pipehandler.UpdateConfPipeHandler" />
+			<handler name="showConfHandler" class="pipe.pipehandler.ShowConfPipeHandler" />
+		</pipeline>
+	</uppipes>
+
+	<downpipes>
+		<pipeline name="pipe1" class="pipe.EventPipeline">
+			<handler name="metaCtrlHandler" class="pipe.pipehandler.MetaCtrlPipeHandler"></handler>
+			<handler name="modeGenCtrlPipeHandler" class="pipe.pipehandler.ModeGenCtrlPipeHandler"></handler>
+			<handler name="showCtrlHandler" class="pipe.pipehandler.ShowCtrlPipeHandler" />
+		</pipeline>
+	</downpipes>
+</context> 
