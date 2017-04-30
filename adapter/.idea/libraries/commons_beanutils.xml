@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="commons-beanutils">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/commons-beanutils.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/commons-collections-3.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/commons-httpclient.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/commons-lang.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/dom4j-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/ezmorph-1.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/json-lib-2.4-jdk15.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/log4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/mongo-java-driver-3.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/morph-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../adapterJar1/org.eclipse.paho.client.mqttv3-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

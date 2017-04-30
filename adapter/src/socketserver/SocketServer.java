@@ -101,6 +101,7 @@ public class SocketServer implements Server {
 			try {
 				skey.channel().configureBlocking(false);
 				skey.channel().register(selector, SelectionKey.OP_WRITE, mes);
+				selector.wakeup();
 			} catch (Exception e) {
 				e.printStackTrace();
 				removeSelectionKey(skey);
@@ -154,10 +155,6 @@ public class SocketServer implements Server {
 	public void stop() {
 		isrun = false;
 		try {
-			selector.wakeup();
-			for (Entry<?, SelectionKey> entry : skeys.entrySet()) {
-				removeSelectionKey(entry.getValue());
-			}
 			if (selector != null) {
 				selector.close();
 			}
@@ -173,14 +170,14 @@ public class SocketServer implements Server {
 			selector = Selector.open();
 			serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.socket().setReuseAddress(true);
-			// ·Ç×èÈûÄ£Ê½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 			serverSocketChannel.configureBlocking(false);
-			// serverSocketChannel.socket()»á»ñµÃÒ»¸öºÍµ±Ç°ÐÅµÀÏà¹ØÁªµÄsocket
+			// serverSocketChannel.socket()ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Íµï¿½Ç°ï¿½Åµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½socket
 			serverSocketChannel.socket().bind(new InetSocketAddress(port), 100);
-			// ×¢²á½ÓÊÕÁ¬½Ó¾ÍÐ÷ÊÂ¼þ
-			// ×¢²áÊÂ¼þºó»á·µ»ØÒ»¸öSelectionKey¶ÔÏóÓÃÒÔ¸ú×Ù×¢²áÊÂ¼þ¾ä±ú
-			// ¸ÃSelectionKey½«»á·ÅÈëSelectorµÄall-keys¼¯ºÏÖÐ£¬Èç¹ûÏàÓ¦µÄÊÂ¼þ´¥·¢
-			// ¸ÃSelectionKey½«»á·ÅÈëSelectorµÄselected-keys¼¯ºÏÖÐ
+			// ×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¾ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+			// ×¢ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½á·µï¿½ï¿½Ò»ï¿½ï¿½SelectionKeyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½
+			// ï¿½ï¿½SelectionKeyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Selectorï¿½ï¿½all-keysï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½
+			// ï¿½ï¿½SelectionKeyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Selectorï¿½ï¿½selected-keysï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -192,9 +189,12 @@ public class SocketServer implements Server {
 	}
 
 	public void service() {
+		int emptyLoopTime = 0;
 		while (isrun) {
 			try {
-				if (selector.select(500) > 0) {
+				int selCnt = selector.select();
+				if (selCnt > 0) {
+					emptyLoopTime = 0;
 					Set<SelectionKey> selectedKeys = selector.selectedKeys();
 					Iterator<SelectionKey> iterator = selectedKeys.iterator();
 					while (iterator.hasNext()) {
@@ -204,8 +204,13 @@ public class SocketServer implements Server {
 						selectionKey.interestOps(ops & ~SelectionKey.OP_READ & ~SelectionKey.OP_WRITE);
 						tackle(selectionKey);
 					}
+				} else {
+					emptyLoopTime++;
+					if (emptyLoopTime > 10000) {
+						log.warn("An JDK select bug occurred");
+						// TODO
+					}
 				}
-				// System.out.println("loop out:" + selectedKeys.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -247,7 +252,6 @@ public class SocketServer implements Server {
 				removeSelectionKey(selectionKey);
 			}
 		} else if (selectionKey.isReadable()) {
-			// System.out.println("isReadable:" + selectionKey.hashCode());
 			es.submit(new Runnable() {
 				@Override
 				public void run() {
@@ -255,8 +259,6 @@ public class SocketServer implements Server {
 				}
 			});
 		} else if (selectionKey.isWritable()) {
-			// System.out.println("isWritable:" + selectionKey.hashCode() +
-			// ";;;" + (xxx == selectionKey));
 			es.submit(new Runnable() {
 				@Override
 				public void run() {
@@ -271,12 +273,10 @@ public class SocketServer implements Server {
 			SocketChannel sc = (SocketChannel) selectionKey.channel();
 			ByteBuffer buffer = ByteBuffer.allocate(BUF_SIZE);
 			int num = sc.read(buffer);
-			String request = "";
-			// System.out.println(num);
 			if (num > 0) {
 				buffer.flip();
-				request = charset.decode(buffer).toString();
-				// System.out.println(request);
+				String request = charset.decode(buffer).toString();
+				System.out.println(request);
 				addSelectionKey(selectionKey);
 				callListener(selectionKey.hashCode(), request);
 			} else {
