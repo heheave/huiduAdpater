@@ -101,9 +101,10 @@ public class PipesAsychBusHandler<T extends Event> extends AbstractPipesBusHandl
 			Object pl_o = con.newInstance(this);
 			for (Object hc : ple.elements("handler")) {
 				Class<?> hc_clz = Class.forName(((Element) hc).attributeValue("class"));
-				Annotation a = hc_clz.getMethods()[0].getAnnotation(SkipMe.class);
+				SkipMe a = hc_clz.getMethods()[0].getAnnotation(SkipMe.class);
 				boolean isSkipped = false;
 				if (a != null) {
+					log.info("Handler " + hc_clz.getName() + " will be skipped, because of " + a.reason());
 					isSkipped = true;
 				}
 				Method m = c.getMethod("addHandler", hc_clz.getInterfaces()[0], boolean.class);

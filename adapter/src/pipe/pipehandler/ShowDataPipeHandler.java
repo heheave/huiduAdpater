@@ -11,6 +11,7 @@ public class ShowDataPipeHandler implements PipeHandler<PacketEvent> {
 	private static final Logger log = Logger.getLogger(ShowDataPipeHandler.class);
 
 	@Override
+	@SkipMe(reason = "In product env, this should be skipped")
 	public OP handle(PipeHandlerContext<PacketEvent> hc, PacketEvent e) throws Exception {
 		log.info("Data: " + hc.getPipeline().id() + ":" + hc.id() + "---" + e);
 		return OP.NEXT;
