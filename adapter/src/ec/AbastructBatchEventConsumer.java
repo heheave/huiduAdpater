@@ -48,6 +48,7 @@ public abstract class AbastructBatchEventConsumer<T> implements EventConsumer<T>
 				// clear all elements in empty
 				// log.info("successfully done a batch");
 			} catch (Exception e) {
+				e.printStackTrace();
 				log.error("consumer once occurs error and empty is clear");
 			} finally {
 				empty.clear();

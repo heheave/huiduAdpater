@@ -15,17 +15,23 @@ public final class DefaultPipeHandlerContext<T extends Event> implements PipeHan
 	private final int id = IDGenUtil.getId();
 	private Pipeline<T> pipeline;
 	private PipeHandler<T> handler;
+	private PipeHandlerContext<T> pre;
+	private PipeHandlerContext<T> next;
+	private final boolean skipped;
 
-	public DefaultPipeHandlerContext(Pipeline<T> pipeline, PipeHandler<T> handler) {
+	public DefaultPipeHandlerContext(Pipeline<T> pipeline, PipeHandler<T> handler, boolean skipped) {
 		if (pipeline == null) {
 			throw new IllegalArgumentException("pipeline connot be null");
 		}
 		this.pipeline = pipeline;
 		this.handler = handler;
+		this.pre = null;
+		this.next = null;
+		this.skipped = skipped;
 	}
 
 	public DefaultPipeHandlerContext(Pipeline<T> pipeline) {
-		this(pipeline, null);
+		this(pipeline, null, true);
 	}
 
 	@Override
@@ -39,15 +45,37 @@ public final class DefaultPipeHandlerContext<T extends Event> implements PipeHan
 	}
 
 	@Override
-	public PipeHandlerContext<T> getNext() {
-		return this.pipeline.getNextHandlerContext(this);
+	public void setPre(PipeHandlerContext<T> pre) {
+		if (this.pre == null) {
+			this.pre = pre;
+		} else {
+			throw new IllegalArgumentException("Cannot set pre when pre is not null");
+		}
+
 	}
 
 	@Override
-	public PipeHandlerContext<T> getPre() {
-		// TODO Auto-generated method stub
-		// now we just support next
-		return null;
+	public void setNext(PipeHandlerContext<T> next) {
+		if (this.next == null) {
+			this.next = next;
+		} else {
+			throw new IllegalArgumentException("Cannot set next when pre is not null");
+		}
+	}
+
+	@Override
+	public PipeHandlerContext<T> pre() {
+		return pre;
+	}
+
+	@Override
+	public PipeHandlerContext<T> next() {
+		return next;
+	}
+
+	@Override
+	public boolean skipped() {
+		return skipped;
 	}
 
 	public void tackle(Bus c, T e) {
@@ -76,7 +104,11 @@ public final class DefaultPipeHandlerContext<T extends Event> implements PipeHan
 	}
 
 	private void next_tackle(Bus b, T e) {
-		PipeHandlerContext<T> hc_next = this.pipeline.getNextHandlerContext(this);
+		//PipeHandlerContext<T> hc_next = this.pipeline.getNextHandlerContext(this);
+		PipeHandlerContext<T> hc_next = next();
+		while (hc_next != null && hc_next.skipped()) {
+			hc_next = hc_next.next();
+		}
 		if (hc_next != null) {
 			hc_next.tackle(b, e);
 		} else {

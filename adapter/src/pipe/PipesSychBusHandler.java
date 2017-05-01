@@ -1,6 +1,7 @@
 package pipe;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -9,6 +10,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import pipe.pipehandler.SkipMe;
 import util.IDGenUtil;
 import v.V;
 import bus.Bus;
@@ -77,8 +79,13 @@ public class PipesSychBusHandler<T extends Event> extends AbstractPipesBusHandle
 			Object pl_o = con.newInstance(this);
 			for (Object hc : ple.elements("handler")) {
 				Class<?> hc_clz = Class.forName(((Element) hc).attributeValue("class"));
-				Method m = c.getMethod("addHandler", hc_clz.getInterfaces());
-				m.invoke(pl_o, hc_clz.newInstance());
+				Annotation a = hc_clz.getMethods()[0].getAnnotation(SkipMe.class);
+				boolean isSkipped = false;
+				if (a != null) {
+					isSkipped = true;
+				}
+				Method m = c.getMethod("addHandler", hc_clz.getInterfaces()[0], boolean.class);
+				m.invoke(pl_o, hc_clz.newInstance(), isSkipped);
 			}
 			pipe = (Pipeline<T>) pl_o;
 			break;
@@ -88,7 +95,7 @@ public class PipesSychBusHandler<T extends Event> extends AbstractPipesBusHandle
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handlerEvent(Bus bus, Event event) {
-		pipe.first(bus, (T) event);
+		pipe.headIn(bus, (T) event);
 	}
 
 }

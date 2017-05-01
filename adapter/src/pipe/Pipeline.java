@@ -13,10 +13,8 @@ public interface Pipeline<T extends Event> extends Component {
 
 	AbstractPipesBusHandler<T> getContainer();
 
-	void first(Bus c, T e);
+	void headIn(Bus c, T e);
 
-	PipeHandlerContext<T> getNextHandlerContext(PipeHandlerContext<T> hc);
-
-	void addHandler(PipeHandler<T> hc);
+	void addHandler(PipeHandler<T> hc, boolean isSkipped);
 
 }

@@ -20,7 +20,7 @@ public class EventPipeline<T extends Event> implements Pipeline<T> {
 
 	private final AbstractPipesBusHandler<T> belongsTo;
 
-	private final ConcurrentHashMap<Integer, PipeHandlerContext<T>> next_map = new ConcurrentHashMap<Integer, PipeHandlerContext<T>>();
+	// private final ConcurrentHashMap<Integer, PipeHandlerContext<T>> next_map = new ConcurrentHashMap<Integer, PipeHandlerContext<T>>();
 
 	private volatile PipeHandlerContext<T> head = null;
 
@@ -53,28 +53,20 @@ public class EventPipeline<T extends Event> implements Pipeline<T> {
 	}
 
 	@Override
-	public void addHandler(PipeHandler<T> hc) {
-		PipeHandlerContext<T> dhc = new DefaultPipeHandlerContext<T>(this, hc);
-		// System.out.println(hc.getClass().getName());
+	public void addHandler(PipeHandler<T> hc, boolean isSkipped) {
+		PipeHandlerContext<T> dhc = new DefaultPipeHandlerContext<T>(this, hc, isSkipped);
 		if (head == null) {
 			head = dhc;
-			tail = dhc;
 		} else {
-			next_map.put(tail.id(), dhc);
-			tail = dhc;
+			tail.setNext(dhc);
+			dhc.setPre(tail);
+			//next_map.put(tail.id(), dhc);
 		}
+		tail = dhc;
 	}
 
 	@Override
-	public PipeHandlerContext<T> getNextHandlerContext(PipeHandlerContext<T> hc) {
-		if (next_map.containsKey(hc.id())) {
-			return next_map.get(hc.id());
-		}
-		return null;
-	}
-
-	@Override
-	public void first(final Bus b, final T e) {
+	public void headIn(final Bus b, final T e) {
 		e.setPipeId(id);
 		if (head == null) {
 			e.changeCode(CODE.OUT);

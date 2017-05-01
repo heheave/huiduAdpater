@@ -1,6 +1,7 @@
 package pipe;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import bus.Bus;
+import pipe.pipehandler.SkipMe;
 import util.IDGenUtil;
 import v.V;
 import ec.AbastructEventConsumer;
@@ -35,7 +37,7 @@ public class PipesAsychBusHandler<T extends Event> extends AbstractPipesBusHandl
 				@Override
 				public void run() {
 					int pidx = e.getPipeId();
-					pipes.get(pidx).first(bus, e);
+					pipes.get(pidx).headIn(bus, e);
 				}
 			});
 		}
@@ -99,8 +101,13 @@ public class PipesAsychBusHandler<T extends Event> extends AbstractPipesBusHandl
 			Object pl_o = con.newInstance(this);
 			for (Object hc : ple.elements("handler")) {
 				Class<?> hc_clz = Class.forName(((Element) hc).attributeValue("class"));
-				Method m = c.getMethod("addHandler", hc_clz.getInterfaces());
-				m.invoke(pl_o, hc_clz.newInstance());
+				Annotation a = hc_clz.getMethods()[0].getAnnotation(SkipMe.class);
+				boolean isSkipped = false;
+				if (a != null) {
+					isSkipped = true;
+				}
+				Method m = c.getMethod("addHandler", hc_clz.getInterfaces()[0], boolean.class);
+				m.invoke(pl_o, hc_clz.newInstance(), isSkipped);
 			}
 			pipes.add((Pipeline<T>) pl_o);
 		}

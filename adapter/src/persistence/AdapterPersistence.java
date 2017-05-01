@@ -79,7 +79,7 @@ public class AdapterPersistence implements Persistence {
 		Exception ec = null;
 		try {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<PersistenceData> datas = (List) pevents;
+			Collection<PersistenceData> datas = (Collection) pevents;
 			persistence1(datasDbOpt, channelFileOpt, datas);
 		} catch (Exception e) {
 			ec = e;
@@ -104,7 +104,6 @@ public class AdapterPersistence implements Persistence {
 			}
 		} finally {
 			realTimeDatas.clear();
-			realTimeDatas = null;
 		}
 
 		if (ec != null) {
@@ -120,7 +119,7 @@ public class AdapterPersistence implements Persistence {
 			dbPa.persistenceBatch(opt1, pdata);
 			log.info("successfully persisted to db");
 		} catch (Exception e) {
-			log.info("persist to db error, second try to persist datas to file");
+			log.warn("persist to db error, second try to persist datas to file", e);
 			filePa.persistenceBatch(opt2, pdata);
 			log.info("successfully persisted to file");
 		}
